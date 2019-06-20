@@ -23,6 +23,19 @@ describe('StatefulObject', function(){
             })
         })
 
+        describe('when the value is an empty array', function(){
+            it('must store the array of values as a list of primitives', async function(){
+                var property = 'propertyName'
+                var value1 = 'value1'
+                var value2 = 'value2'
+                var array = []
+
+                await object.set(property, array)
+
+                expect(await state.hasStored({id, attribute: property, value: array, type: 'primitive-list'})).to.equal(true)
+            })
+        })
+
         describe('when the value is an array of strings', function(){
             it('must store the array of values as a list of primitives', async function(){
                 var property = 'propertyName'

@@ -13,13 +13,10 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
 
     async function set(attribute, value){
         if(Array.isArray(value)){
-            //TODO: empty array
-
             if(typeof value[0] === 'object'){
                 var idsArray = []
                 for(var item of value){
                     if(!item.id) throw new Error('missing id')
-                    //TODO: allow arrays of multiple types, make them always references and build complex types on the factory
                     idsArray.push(item.id)
                 }
                 await state.store({id, attribute, value: idsArray, type: reference_list_type})
