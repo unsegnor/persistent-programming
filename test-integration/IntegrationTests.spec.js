@@ -65,39 +65,5 @@ describe('Integration tests', function(){
             expect(things[0].id).to.equal(thingOne.id)
             expect(things[1].id).to.equal(thingTwo.id)
         })
-
-        xit('must allow adding more values to a property', async function(){
-            var person = await objectRepository.getNew()
-            await person.add('cards', 'FirstCard')
-            await person.add('cards', 'SecondCard')
-
-            var cards = await person.getAll('cards')
-
-            expect(cards).to.contain('FirstCard')
-            expect(cards).to.contain('SecondCard')
-        })
-    
-        xit('must allow getting items that evaluate to true a given function', async function(){
-            var task = await objectRepository.getNew()
-            var task2 = await objectRepository.getNew()
-            var task3 = await objectRepository.getNew()
-            var user = await objectRepository.getNew()
-    
-            await task.set('assignedTo', user)
-            await task3.set('assignedTo', user)
-    
-            var userTasks = await objectRepository.get(async function(object){
-                var assignedTo = await object.get('assignedTo')
-                return assignedTo.id === user.id
-            })
-    
-            expect(userTasks.contains(task)).to.equal(true)
-            expect(userTasks.contains(task2)).to.equal(false)
-            expect(userTasks.contains(task3)).to.equal(true)
-        })
-    
-        it('must allow working with collections of objects')
-    
-        it('must allow defining and executing methods')
     })
 })
