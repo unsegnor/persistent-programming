@@ -1,4 +1,5 @@
 const {expect} = require('chai')
+const {expectToThrow} = require('../test-tools/Expects')()
 const FakeObject = require('./FakeObject')
 
 describe('FakeObject', function(){
@@ -32,24 +33,16 @@ describe('FakeObject', function(){
         it('must throw when the object has not been set as equal', async function(){
             var object = FakeObject()
             var otherObject = 'otherObject'
-
-            try{
+            await expectToThrow('object not expected', async function(){
                 await object.equals(otherObject)
-                expect.fail()
-            }catch(error){
-                expect(error.message).to.contain('object not expected')
-            }
+            })
         })
 
         it('must throw when the object is undefined and has not been set as equal', async function(){
             var object = FakeObject()
-
-            try{
+            await expectToThrow('object not expected', async function(){
                 await object.equals()
-                expect.fail()
-            }catch(error){
-                expect(error.message).to.contain('object not expected')
-            }
+            })
         })
     })
 
@@ -64,13 +57,9 @@ describe('FakeObject', function(){
         it('must throw when getting a not expected attribute', async function(){
             var object = FakeObject()
             object.setFake('attribute', 'value')
-            
-            try{
+            await expectToThrow('attribute not expected', async function(){
                 await object.get('otherAttribute')
-                expect.fail()
-            }catch(error){
-                expect(error.message).to.contain('attribute not expected')
-            }
+            })
         })
     })
 })

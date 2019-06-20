@@ -1,4 +1,5 @@
 const {expect} = require('chai')
+const {expectToThrow} = require('../test-tools/Expects')()
 const StatefulObject = require('./StatefulObject')
 const FakeState = require('../test-doubles/FakeState')
 const FakeObjectRepository = require('../test-doubles/FakeObjectRepository')
@@ -55,12 +56,9 @@ describe('StatefulObject', function(){
                 it('must throw an error', async function(){
                     var property = 'propertyName'
                     var newValue = {name: 'cosa'}
-                    try{
+                    await expectToThrow('missing id', async function(){
                         await object.set(property, newValue)
-                        expect.fail()
-                    }catch(error){
-                        expect(error.message).to.contain('missing id')
-                    }
+                    })
                 })
             })
 
@@ -84,12 +82,10 @@ describe('StatefulObject', function(){
                     var objectValue = FakeObject()
                     objectValue.setFakeId('validId')
                     var newValue = [objectValue,{name: 'cosa2'}]
-                    try{
+
+                    await expectToThrow('missing id', async function(){
                         await object.set(property, newValue)
-                        expect.fail()
-                    }catch(error){
-                        expect(error.message).to.contain('missing id')
-                    }
+                    })
                 })
             })
 

@@ -1,4 +1,5 @@
 const {expect} = require('chai')
+const {expectToThrow} = require('../test-tools/Expects')()
 const ObjectRepository = require('./ObjectRepository')
 const FakeObjectFactory = require('../test-doubles/FakeObjectFactory')
 const FakeIdGenerator = require('../test-doubles/FakeIdGenerator')
@@ -64,13 +65,9 @@ describe('ObjectRepository', function(){
 
         it('must throw when the id does not exist in the state', async function(){
             state.setRegistered(id, false)
-
-            try{
+            await expectToThrow('id does not exist', async function(){
                 await repository.get(id)
-                expect.fail()
-            } catch(error){
-                expect(error.message).to.contain('id does not exist')
-            }
+            })
         })
 
         describe('when the id does exist', function(){

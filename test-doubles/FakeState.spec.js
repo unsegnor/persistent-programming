@@ -1,4 +1,5 @@
 const {expect} = require('chai')
+const {expectToThrow} = require('../test-tools/Expects')()
 const FakeState = require('./FakeState')
 
 describe('FakeState', function(){
@@ -64,22 +65,16 @@ describe('FakeState', function(){
 
         it('must throw when the id does not match', async function(){
             state.setStored({id, attribute, value, type})
-            try{
+            await expectToThrow('id not matching', async function(){
                 await state.load({id: 'otherId', attribute})
-                expect.fail()
-            } catch(error){
-                expect(error.message).to.contain('id not matching')
-            }
+            })
         })
 
         it('must throw when the attribute does not match', async function(){
             state.setStored({id, attribute, value, type})
-            try{
+            await expectToThrow('attribute not matching', async function(){
                 await state.load({id, attribute: 'otherAttribute'})
-                expect.fail()
-            } catch(error){
-                expect(error.message).to.contain('attribute not matching')
-            }
+            })
         })
     })
 

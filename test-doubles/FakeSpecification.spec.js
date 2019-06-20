@@ -1,4 +1,5 @@
 const {expect} = require('chai')
+const {expectToThrow} = require('../test-tools/Expects')()
 const FakeSpecification = require('./FakeSpecification')
 
 describe('FakeSpecification', function(){
@@ -14,13 +15,9 @@ describe('FakeSpecification', function(){
         it('must throw when the input is not set as satisfied by the object', async function(){
             var object = 'fakeObject'
             var specification = FakeSpecification()
-
-            try{
+            await expectToThrow('object not expected', async function(){
                 await specification.isSatisfiedBy(object)
-                expect.fail()
-            }catch(error){
-                expect(error.message).to.contain('object not expected')
-            }
+            })
         })
     })
 })
