@@ -1,0 +1,22 @@
+{
+  "name": "object-repository",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test-mocha",
+    "test-mocha": "npm run test-doubles && npm run test-domain && npm run test-adapters && npm run test-integration",
+    "test-domain": "mocha domain --recursive",
+    "test-doubles": "mocha test-doubles --recursive",
+    "test-adapters": "mocha adapters --recursive",
+    "test-integration": "mocha test-integration --recursive"
+  },
+  "author": "Víctor Calatayud Asensio",
+  "license": "GPL v3.0",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^6.0.2",
+    "sinon": "^7.3.1"
+  }
+}
