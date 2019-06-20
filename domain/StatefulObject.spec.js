@@ -2,6 +2,7 @@ const {expect} = require('chai')
 const StatefulObject = require('./StatefulObject')
 const FakeState = require('../test-doubles/FakeState')
 const FakeObjectRepository = require('../test-doubles/FakeObjectRepository')
+const FakeObject = require('../test-doubles/FakeObject')
 
 describe('StatefulObject', function(){
     let object, state, id, objectRepository
@@ -50,7 +51,7 @@ describe('StatefulObject', function(){
         })
 
         describe('when the value is an object', function(){
-            describe('when the value has no id property', function(){
+            describe('when the value has no id', function(){
                 it('must throw an error', async function(){
                     var property = 'propertyName'
                     var newValue = {name: 'cosa'}
@@ -63,11 +64,12 @@ describe('StatefulObject', function(){
                 })
             })
 
-            describe('when the value has id property', function(){
+            describe('when the value has id', function(){
                 it('must set the value id in the stored value and set it as a reference', async function(){
                     var property = 'propertyName'
                     var valueId = 'valueId'
-                    var newValue = {id: valueId}
+                    var newValue = FakeObject()
+                    newValue.setFakeId(valueId)
                     await object.set(property, newValue)
 
                     expect(await state.hasStored({id, attribute: property, value: valueId, type: 'reference'})).to.equal(true)
@@ -79,7 +81,9 @@ describe('StatefulObject', function(){
             describe('when some of the objects have no id property', function(){
                 it('must throw an error', async function(){
                     var property = 'propertyName'
-                    var newValue = [{name: 'cosa', id:'validId'},{name: 'cosa2'}]
+                    var objectValue = FakeObject()
+                    objectValue.setFakeId('validId')
+                    var newValue = [objectValue,{name: 'cosa2'}]
                     try{
                         await object.set(property, newValue)
                         expect.fail()
@@ -94,7 +98,11 @@ describe('StatefulObject', function(){
                     var property = 'propertyName'
                     var valueId = 'valueId'
                     var valueId2 = 'valueId2'
-                    var newValue = [{id: valueId}, {id: valueId2}]
+                    var objectValue1 = FakeObject()
+                    objectValue1.setFakeId(valueId)
+                    var objectValue2 = FakeObject()
+                    objectValue2.setFakeId(valueId2)
+                    var newValue = [objectValue1, objectValue2]
                     await object.set(property, newValue)
 
                     expect(await state.hasStored({id, attribute: property, value: [valueId, valueId2], type: 'reference-list'})).to.equal(true)
@@ -174,6 +182,12 @@ describe('StatefulObject', function(){
                 expect(result).to.contain(expectedObject1)
                 expect(result).to.contain(expectedObject2)
             })
+        })
+    })
+
+    describe('getId', function(){
+        it('must return the id of the object', async function(){
+            expect(await object.getId()).to.equal(id)
         })
     })
 })

@@ -107,18 +107,4 @@ describe('ObjectRepository', function(){
             })
         })
     })
-
-    //ObjectRepository también añade algo al state?? o lo que son diferentes son los states??
-    //no, el objectRepository quizá podría añadir algo al guardarlo.... bueno sí, ya lo hace, lo de exist
-    //aunque el exist bien lo podría añadir la propia clase al ser instanciada
-
-    //claro, el repository sólo tendría que mantener en el state la información de qué ids contiene
-    //y ya cada repository puede hacer sus paranoias de optimización de índices y tal...
-
-    //claro que la implementación actual obliga a que el state sea el mismo para el repository y las clases
-    //bueno, en realidad eso lo gestiona el repository que sabe qué state asigna a cada objeto que devuelve
-    //bien podríamos tener un multirepository que en función de un parámetro o del id o del tipo de los objetos
-    //utilizara un state diferente
-
-    //o incluso tener un multistate que hiciera la distinción, claro que éste sólo la podría hacer en función de datos de almacenamiento
 })

@@ -8,24 +8,28 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
     return Object.freeze({
         set,
         get,
-        id
+        getId
     })
+
+    async function getId(){
+        return id
+    }
 
     async function set(attribute, value){
         if(Array.isArray(value)){
             if(typeof value[0] === 'object'){
                 var idsArray = []
                 for(var item of value){
-                    if(!item.id) throw new Error('missing id')
-                    idsArray.push(item.id)
+                    if(!item.getId) throw new Error('missing id')
+                    idsArray.push(await item.getId())
                 }
                 await state.store({id, attribute, value: idsArray, type: reference_list_type})
             } else{
                 await state.store({id, attribute, value, type: primitive_list_type})
             }
         }else if(typeof value === 'object'){
-            if(!value.id) throw new Error('missing id')
-            await state.store({id, attribute, value: value.id, type: reference_type})
+            if(!value.getId) throw new Error('missing id')
+            await state.store({id, attribute, value: await value.getId(), type: reference_type})
         }else if(typeof value === 'string'){
             await state.store({id, attribute, value, type: primitive_type})
         }

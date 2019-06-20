@@ -38,7 +38,7 @@ describe('Integration tests', function(){
     
         it('must auto update the object data when both have the same reference', async function(){
             var task = await objectRepository.getNew()
-            var sameTask = await objectRepository.get(task.id)
+            var sameTask = await objectRepository.get(await task.getId())
     
             await task.set('duedate', 'fakeDate')
     
