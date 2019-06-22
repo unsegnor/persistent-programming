@@ -2,9 +2,10 @@
   "name": "object-repository",
   "version": "1.0.1",
   "description": "",
+  "repository": "github:unsegnor/object-repository",
   "main": "index.js",
   "scripts": {
-    "release": "generate-release",
+    "release": "release-it",
     "test": "npm run test-mocha",
     "test-mocha": "npm run test-doubles && npm run test-domain && npm run test-adapters && npm run test-integration",
     "test-domain": "mocha domain --recursive",
@@ -13,11 +14,11 @@
     "test-integration": "mocha test-integration --recursive"
   },
   "author": "Víctor Calatayud Asensio",
-  "license": "GPL v3.0",
+  "license": "GPL-3.0-or-later",
   "devDependencies": {
     "chai": "^4.2.0",
-    "generate-release": "^1.1.1",
     "mocha": "^6.0.2",
+    "release-it": "^12.3.0",
     "sinon": "^7.3.1"
   }
 }
