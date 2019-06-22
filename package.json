@@ -1,8 +1,8 @@
 {
-  "name": "object-repository",
+  "name": "persistent-programming",
   "version": "1.0.3",
   "description": "",
-  "repository": "github:unsegnor/object-repository",
+  "repository": "github:unsegnor/persistent-programming",
   "main": "index.js",
   "scripts": {
     "release": "release-it",
