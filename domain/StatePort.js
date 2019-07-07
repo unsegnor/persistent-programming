@@ -31,7 +31,7 @@ module.exports = function(){
                 await state.store({id, attribute, value, type})
                 var storedData = await state.load({id, attribute})
     
-                expect(storedData.value).to.equal(value)
+                expect(storedData.value).to.deep.equal(value)
                 expect(storedData.type).to.equal(type)
             })
 
