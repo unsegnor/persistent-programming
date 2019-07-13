@@ -1,6 +1,6 @@
 const State = require('./InMemoryState')
 const ObjectRepository = require('../domain/ObjectRepository')
-const ObjectFactory = require('../domain/StatefulObjectFactory')
+const ObjectFactory = require('../domain/StatefulObject.factory')
 const IdGenerator = require('./InMemoryIdGenerator')
 
 module.exports = function() {

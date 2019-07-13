@@ -32,6 +32,8 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
             await state.store({id, attribute, value: await value.getId(), type: reference_type})
         }else if(typeof value === 'string'){
             await state.store({id, attribute, value, type: primitive_type})
+        }else{
+            throw new Error('type not supported: ' + (typeof value))
         }
     }
 
@@ -58,5 +60,7 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
         if(retrievedInfo.type === primitive_list_type){
             return retrievedInfo.value
         }
+
+        throw new Error('type not expected: ' + retrievedInfo.type)
     }
 }

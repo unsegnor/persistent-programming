@@ -105,6 +105,17 @@ describe('StatefulObject', function(){
                 })
             })
         })
+
+        describe('when the value is a primitive but not a string', function(){
+            it('must throw not supported primitive type exception', async function(){
+                var property = 'propertyName'
+                var newValue = 10100
+                
+                await expectToThrow('type not supported: ' + typeof(newValue), async function(){
+                    await object.set(property, newValue)
+                })
+            })
+        })
     })
 
     describe('get', function(){
@@ -177,6 +188,16 @@ describe('StatefulObject', function(){
 
                 expect(result).to.contain(expectedObject1)
                 expect(result).to.contain(expectedObject2)
+            })
+        })
+
+        it('must throw when the type is not expected', async function(){
+            var attribute = 'attribute'
+            var value = 'value'
+            state.setStored({id, attribute, value, type: 'invalid-type'})
+
+            await expectToThrow('type not expected: invalid-type', async function(){
+                await object.get(attribute)
             })
         })
     })
