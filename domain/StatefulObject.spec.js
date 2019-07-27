@@ -191,6 +191,13 @@ describe('StatefulObject', function(){
             })
         })
 
+        it('must return undefined when the attribute has no value nor type', async function(){
+            var attribute = 'attribute'
+            state.setStored({id, attribute, value: undefined, type: undefined})
+            var retrievedValue = await object.get(attribute)
+            expect(retrievedValue).to.equal(undefined)
+        })
+
         it('must throw when the type is not expected', async function(){
             var attribute = 'attribute'
             var value = 'value'

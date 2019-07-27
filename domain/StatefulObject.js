@@ -61,6 +61,10 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
             return retrievedInfo.value
         }
 
+        if(retrievedInfo.type === undefined){
+            return undefined
+        }
+
         throw new Error('type not expected: ' + retrievedInfo.type)
     }
 }
