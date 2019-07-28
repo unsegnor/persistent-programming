@@ -8,7 +8,8 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
     return Object.freeze({
         set,
         get,
-        getId
+        getId,
+        add
     })
 
     async function getId(){
@@ -66,5 +67,79 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
         }
 
         throw new Error('type not expected: ' + retrievedInfo.type)
+    }
+
+    async function add(attribute, value){
+        var oldAttribute = await state.load({id, attribute})
+
+        if(value === undefined || Array.isArray(value) && value.some(function(item){ return item === undefined})){
+            throw new Error('adding undefined values is not supported')
+        }
+
+        if(Array.isArray(value) && !isAnArrayOf(value, 'object') && !isAnArrayOf(value, 'string')) throwMixedListsNotSupportedError()
+
+        if(isAnArrayOf(value, 'object')){
+            var ids = []
+            for(var item of value){
+                if(!item.getId) throw new Error('missing id')
+                ids.push(await item.getId())
+            }
+
+            if(oldAttribute.type === primitive_type || oldAttribute.type === primitive_list_type) throwMixedListsNotSupportedError()
+
+            if(oldAttribute.type === reference_type){
+                await state.store({id, attribute, value: [oldAttribute.value, ...ids], type: reference_list_type})
+            }else if(oldAttribute.type === reference_list_type){
+                await state.store({id, attribute, value: [...oldAttribute.value, ...ids], type: reference_list_type})
+            }else{
+                await state.store({id, attribute, value: ids, type: reference_list_type})
+            }
+        }else if((typeof(value)) === 'object' && !Array.isArray(value)){
+            if(!value.getId) throw new Error('missing id')
+
+            if(oldAttribute.type === primitive_type || oldAttribute.type === primitive_list_type) throwMixedListsNotSupportedError()
+            
+            var valueId = await value.getId()
+            if(oldAttribute.type === reference_type){
+                await state.store({id, attribute, value: [oldAttribute.value, valueId], type: reference_list_type})
+            }else if(oldAttribute.type === reference_list_type){
+                await state.store({id, attribute, value: [...oldAttribute.value, valueId], type: reference_list_type})
+            }else{
+                await state.store({id, attribute, value: [valueId], type: reference_list_type})
+            }
+        }else if((typeof(value)) === 'string'){
+            if(oldAttribute.type === primitive_type){
+                await state.store({id, attribute, value: [oldAttribute.value, value], type: primitive_list_type})    
+            }else if(oldAttribute.type === primitive_list_type){
+                await state.store({id, attribute, value: [...oldAttribute.value, value], type: primitive_list_type})    
+            }else if(oldAttribute.type === reference_type || oldAttribute.type === reference_list_type){
+                throwMixedListsNotSupportedError()
+            }else{
+                await state.store({id, attribute, value: [value], type: primitive_list_type})
+            }
+        }else if(isAnArrayOf(value, 'string')){
+            if(oldAttribute.type === primitive_type){
+                await state.store({id, attribute, value: [oldAttribute.value, ...value], type: primitive_list_type})        
+            }else if(oldAttribute.type === primitive_list_type){
+                await state.store({id, attribute, value: [...oldAttribute.value, ...value], type: primitive_list_type})    
+            }else if(oldAttribute.type === reference_type || oldAttribute.type === reference_list_type){
+                throwMixedListsNotSupportedError()
+            }else{
+                await state.store({id, attribute, value: value, type: primitive_list_type})    
+            }
+        }else{
+            throw new Error('type not supported: ' + (typeof value))
+        }
+    }
+
+    function throwMixedListsNotSupportedError(){
+        throw new Error('lists of mixed primitives and objects are not yet supported')
+    }
+
+    function isAnArrayOf(value, type){
+        return Array.isArray(value) && 
+            value.every(function(item){
+                return typeof(item) === type
+            })
     }
 }

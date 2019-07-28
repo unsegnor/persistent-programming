@@ -55,6 +55,62 @@ describe('FakeState', function(){
         })
     })
 
+    describe('assertHasStored', function(){
+        it('must not throw when the id, attribute, value and type have been stored', async function(){
+            await state.store({id, attribute, value, type})
+            await state.assertHasStored({id, attribute, value, type})
+        })
+
+        it('must not throw when the id, attribute, value as an array and type have been stored', async function(){
+            await state.store({id, attribute, value: ['value1', 'value2'], type})
+            await state.assertHasStored({id, attribute, value: ['value1', 'value2'], type})
+        })
+
+        it('must throw when the value as an array has different elements', async function(){
+            await state.store({id, attribute, value: ['value1', 'value2'], type})
+            await expectToThrow('stored value: value1,value2 is different than expected: value3,value2', async function(){
+                await state.assertHasStored({id, attribute, value: ['value3', 'value2'], type})
+            })
+        })
+
+        it('must throw when the value as an array has a different number of elements', async function(){
+            await state.store({id, attribute, value: ['value1'], type})
+            await expectToThrow('stored value: value1 is different than expected: value3,value2', async function(){
+                await state.assertHasStored({id, attribute, value: ['value3', 'value2'], type})
+            })
+        })
+
+        it('must throw when the id has not been stored', async function(){
+            await state.store({id, attribute, value, type})
+            await expectToThrow('stored id: ' + id + ' is different than expected: otherId', async function(){
+                await state.assertHasStored({id: 'otherId', attribute, value, type})
+            })
+        })
+
+        it('must throw when the attribute has not been stored', async function(){
+            await state.store({id, attribute, value, type})
+            await expectToThrow('stored attribute: ' + attribute + ' is different than expected: otherAttribute', async function(){
+                await state.assertHasStored({id, attribute: 'otherAttribute', value, type})
+            })
+        })
+
+        it('must throw when the value has not been stored', async function(){
+            await state.store({id, attribute, value, type})
+            await expectToThrow('stored value: '+ value +' is different than expected: otherValue', async function(){
+                await state.assertHasStored({id, attribute, value: 'otherValue', type})
+            })
+        })
+
+        it('must throw when the type has not been stored', async function(){
+            await state.store({id, attribute, value, type})
+            await expectToThrow('stored type: '+ type +' is different than expected: otherType', async function(){
+                await state.assertHasStored({id, attribute, value, type: 'otherType'})
+            })
+        })
+    })
+
+
+
     describe('load', function(){
         it('must return the store value setted when the id and the attribute match', async function(){
             state.setStored({id, attribute, value, type})

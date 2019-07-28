@@ -62,8 +62,66 @@ describe('Integration tests', function(){
             await object.set('things', [thingOne, thingTwo])
             var things = await object.get('things')
 
-            expect(things[0].id).to.equal(thingOne.id)
-            expect(things[1].id).to.equal(thingTwo.id)
+            expect(await things[0].getId()).to.equal(await thingOne.getId())
+            expect(await things[1].getId()).to.equal(await thingTwo.getId())
+        })
+
+        it('must allow adding primitives to a property', async function(){
+            var house = await objectRepository.getNew()
+            await house.set('names', 'my house')
+            await house.add('names', 'your house')
+
+            var names = await house.get('names')
+
+            expect(names).to.contain('my house')
+            expect(names).to.contain('your house')
+        })
+
+        it('must allow adding lists of primitives to a property', async function(){
+            var house = await objectRepository.getNew()
+            await house.set('names', 'my house')
+            await house.add('names', ['your house', 'their house'])
+
+            var names = await house.get('names')
+
+            expect(names).to.contain('my house')
+            expect(names).to.contain('your house')
+            expect(names).to.contain('their house')
+        })
+
+        it('must allow adding objects to a property', async function(){
+            var house = await objectRepository.getNew()
+            var bathroom = await objectRepository.getNew()
+            await bathroom.set('name', 'bath')
+            var bedroom = await objectRepository.getNew()
+            await bedroom.set('name', 'bedroom')
+
+            await house.add('rooms', bathroom)
+            await house.add('rooms', bedroom)
+
+            var rooms = await house.get('rooms')
+
+            expect(await rooms[0].get('name')).to.equal('bath')
+            expect(await rooms[1].get('name')).to.equal('bedroom')
+        })
+
+        it('must allow adding lists of objects to a property', async function(){
+            var house = await objectRepository.getNew()
+            var bathroom = await objectRepository.getNew()
+            var bedroom = await objectRepository.getNew()
+            var kitchen = await objectRepository.getNew()
+            await bathroom.set('name', 'bath')
+            await bedroom.set('name', 'bedroom')
+            await kitchen.set('name', 'kitchen')
+
+            await house.add('rooms', bathroom)
+            await house.add('rooms', [bedroom, kitchen])
+
+            var rooms = await house.get('rooms')
+
+            expect(await rooms[0].get('name')).to.equal('bath')
+            expect(await rooms[1].get('name')).to.equal('bedroom')
+            expect(await rooms[2].get('name')).to.equal('kitchen')
         })
     })
 })

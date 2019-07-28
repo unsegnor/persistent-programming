@@ -6,11 +6,16 @@ module.exports = function(){
     })
 
     async function expectToThrow(expectedMessage, fn){
+        var notFailedError = new Error('The execution did not throw any exception')
         try{
             await fn()
-            expect.fail()
+            throw notFailedError
         } catch(error){
-            expect(error.message).to.contain(expectedMessage)
+            if(error === notFailedError){
+                throw new Error('Expected exception containing: "' + expectedMessage + '" but no exception was thrown.')
+            }else{
+                expect(error.message).to.contain(expectedMessage)
+            }
         }
     }
 }

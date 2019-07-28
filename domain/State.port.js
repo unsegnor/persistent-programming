@@ -26,6 +26,15 @@ module.exports = function(){
                 expect(storedData.type).to.equal(type)
             })
 
+            it('must return the last value and type of the matching id and attribute when they have been stored more than once', async function(){
+                await state.store({id, attribute, value: 'oldValue', type: 'oldType'})
+                await state.store({id, attribute, value, type})
+                var storedData = await state.load({id, attribute})
+    
+                expect(storedData.value).to.equal(value)
+                expect(storedData.type).to.equal(type)
+            })
+
             it('must return the value and type of the matching id and attribute when the value is an array', async function(){
                 var value = ['value1', 'value2']
                 await state.store({id, attribute, value, type})

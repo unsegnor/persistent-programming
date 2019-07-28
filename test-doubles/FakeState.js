@@ -12,7 +12,9 @@ module.exports = function() {
         hasStored,
         setStored,
         setRegistered,
-        hasRegistered
+        hasRegistered,
+
+        assertHasStored
     })
 
     async function register(element){
@@ -28,6 +30,13 @@ module.exports = function() {
         storedAttribute = attribute
         storedValue = value
         storedType = type
+    }
+
+    async function assertHasStored({id, attribute, value, type}){
+        if(storedId !== id) throw new Error('stored id: ' + storedId + ' is different than expected: ' + id)
+        if(storedAttribute !== attribute) throw new Error('stored attribute: ' + storedAttribute + ' is different than expected: ' + attribute)
+        if(storedType !== type) throw new Error('stored type: ' + storedType + ' is different than expected: ' + type)
+        if(!equals(storedValue, value)) throw new Error('stored value: ' + storedValue + ' is different than expected: ' + value )
     }
 
     async function hasStored({id, attribute, value, type}){
