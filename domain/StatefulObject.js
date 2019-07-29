@@ -17,22 +17,17 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
     }
 
     async function set(attribute, value){
-        if(Array.isArray(value)){
-            if(typeof value[0] === 'object'){
-                var idsArray = []
-                for(var item of value){
-                    if(!item.getId) throw new Error('missing id')
-                    idsArray.push(await item.getId())
-                }
-                await state.store({id, attribute, value: idsArray, type: reference_list_type})
-            } else{
-                await state.store({id, attribute, value, type: primitive_list_type})
+        if(isStringValue(value)){
+            var typeToStore = isAList(value) ? primitive_list_type : primitive_type
+            await state.store({id, attribute, value, type: typeToStore})
+        }else if(isObjectValue(value)){
+            if(isAList(value)){
+                var ids = await getIdsFromObjectsList(value)
+                await state.store({id, attribute, value: ids, type: reference_list_type})
+            }else{
+                if(!value.getId) throw new Error('missing id')
+                await state.store({id, attribute, value: await value.getId(), type: reference_type})
             }
-        }else if(typeof value === 'object'){
-            if(!value.getId) throw new Error('missing id')
-            await state.store({id, attribute, value: await value.getId(), type: reference_type})
-        }else if(typeof value === 'string'){
-            await state.store({id, attribute, value, type: primitive_type})
         }else{
             throw new Error('type not supported: ' + (typeof value))
         }
@@ -69,75 +64,106 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
         throw new Error('type not expected: ' + retrievedInfo.type)
     }
 
-    async function add(attribute, value){
-        var oldAttribute = await state.load({id, attribute})
+    async function add(attribute, newValue){
+        var currentAttribute = await state.load({id, attribute})
+        var currentType = currentAttribute.type
+        var currentValue = currentAttribute.value
 
-        if(value === undefined || Array.isArray(value) && value.some(function(item){ return item === undefined})){
-            throw new Error('adding undefined values is not supported')
-        }
+        if(isAnEmptyList(newValue)) return
+        if(hasUndefinedValues(newValue)) throw new Error('adding undefined values is not supported')
+        if(isAMixedList(newValue) || isMixedTypeAndValue(currentType, newValue)) throwMixedListsNotSupportedError()
 
-        if(Array.isArray(value) && !isAnArrayOf(value, 'object') && !isAnArrayOf(value, 'string')) throwMixedListsNotSupportedError()
+        let valueToStore, typeToStore
 
-        if(isAnArrayOf(value, 'object')){
-            var ids = []
-            for(var item of value){
-                if(!item.getId) throw new Error('missing id')
-                ids.push(await item.getId())
-            }
-
-            if(oldAttribute.type === primitive_type || oldAttribute.type === primitive_list_type) throwMixedListsNotSupportedError()
-
-            if(oldAttribute.type === reference_type){
-                await state.store({id, attribute, value: [oldAttribute.value, ...ids], type: reference_list_type})
-            }else if(oldAttribute.type === reference_list_type){
-                await state.store({id, attribute, value: [...oldAttribute.value, ...ids], type: reference_list_type})
-            }else{
-                await state.store({id, attribute, value: ids, type: reference_list_type})
-            }
-        }else if((typeof(value)) === 'object' && !Array.isArray(value)){
-            if(!value.getId) throw new Error('missing id')
-
-            if(oldAttribute.type === primitive_type || oldAttribute.type === primitive_list_type) throwMixedListsNotSupportedError()
-            
-            var valueId = await value.getId()
-            if(oldAttribute.type === reference_type){
-                await state.store({id, attribute, value: [oldAttribute.value, valueId], type: reference_list_type})
-            }else if(oldAttribute.type === reference_list_type){
-                await state.store({id, attribute, value: [...oldAttribute.value, valueId], type: reference_list_type})
-            }else{
-                await state.store({id, attribute, value: [valueId], type: reference_list_type})
-            }
-        }else if((typeof(value)) === 'string'){
-            if(oldAttribute.type === primitive_type){
-                await state.store({id, attribute, value: [oldAttribute.value, value], type: primitive_list_type})    
-            }else if(oldAttribute.type === primitive_list_type){
-                await state.store({id, attribute, value: [...oldAttribute.value, value], type: primitive_list_type})    
-            }else if(oldAttribute.type === reference_type || oldAttribute.type === reference_list_type){
-                throwMixedListsNotSupportedError()
-            }else{
-                await state.store({id, attribute, value: [value], type: primitive_list_type})
-            }
-        }else if(isAnArrayOf(value, 'string')){
-            if(oldAttribute.type === primitive_type){
-                await state.store({id, attribute, value: [oldAttribute.value, ...value], type: primitive_list_type})        
-            }else if(oldAttribute.type === primitive_list_type){
-                await state.store({id, attribute, value: [...oldAttribute.value, ...value], type: primitive_list_type})    
-            }else if(oldAttribute.type === reference_type || oldAttribute.type === reference_list_type){
-                throwMixedListsNotSupportedError()
-            }else{
-                await state.store({id, attribute, value: value, type: primitive_list_type})    
-            }
+        if(isObjectValue(newValue)){
+            var newValues = isAList(newValue)? newValue : [newValue]
+            var newIds = await getIdsFromObjectsList(newValues)
+            valueToStore = joinValuesInAList(currentValue, newIds)
+            typeToStore = reference_list_type
+        }else if(isStringValue(newValue)){
+            valueToStore = joinValuesInAList(currentValue, newValue)
+            typeToStore = primitive_list_type
         }else{
-            throw new Error('type not supported: ' + (typeof value))
+            throw new Error('type not supported: ' + (typeof newValue))
         }
+
+        await state.store({id, attribute, value: valueToStore, type: typeToStore})
+    }
+
+    function joinValuesInAList(currentValue, newValue){
+        if(currentValue === undefined) {
+            if(isAList(newValue)) return newValue
+            return [newValue]
+        }
+
+        if(isAList(currentValue) && isAList(newValue)) return [...currentValue, ...newValue]
+        if(!isAList(currentValue) && isAList(newValue)) return [currentValue, ...newValue]
+        if(isAList(currentValue) && !isAList(newValue)) return [...currentValue, newValue]
+        return [currentValue, newValue]
+    }
+
+    async function getIdsFromObjectsList(list){
+        var ids = []
+        for(var item of list){
+            if(!item.getId) throw new Error('missing id')
+            ids.push(await item.getId())
+        }
+        return ids
+    }
+
+    function isReferenceType(type){
+        return (type === reference_list_type) || (type === reference_type)
+    }
+
+    function isPrimitiveType(type){
+        return (type === primitive_list_type) || (type === primitive_type)
+    }
+
+    function isStringValue(value){
+        return (typeof(value) === 'string') || isAListOf(value, 'string')
+    }
+
+    function isObjectValue(value){
+        return isAnObject(value) || isAListOf(value, 'object')
+    }
+
+    function isAnObject(value){
+        return (typeof(value) === 'object') && !Array.isArray(value)
+    }
+
+    function isAList(value){
+        return Array.isArray(value)
+    }
+
+    function isAMixedList(list){
+        return  isAList(list) &&
+                !isAListOf(list, 'object') &&
+                !isAListOf(list, 'string')
+    }
+
+    function isAnEmptyList(value){
+        return isAList(value) && (value.length === 0)
+    }
+
+    function isMixedTypeAndValue(type, value){
+        return  (isStringValue(value) && isReferenceType(type)) ||
+                (isObjectValue(value) && isPrimitiveType(type))
+    }
+
+    function hasUndefinedValues(value){
+        return  isUndefined(value) || (isAList(value) && value.some(isUndefined))
+    }
+
+    function isUndefined(value){
+        return value === undefined
     }
 
     function throwMixedListsNotSupportedError(){
         throw new Error('lists of mixed primitives and objects are not yet supported')
     }
 
-    function isAnArrayOf(value, type){
-        return Array.isArray(value) && 
+    function isAListOf(value, type){
+        return isAList(value) && 
             value.every(function(item){
                 return typeof(item) === type
             })

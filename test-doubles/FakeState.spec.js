@@ -109,7 +109,16 @@ describe('FakeState', function(){
         })
     })
 
+    describe('hasStoredAnything', function(){
+        it('must return false when nothing was store', async function(){
+            expect(state.hasStoredAnything()).to.equal(false)
+        })
 
+        it('must return true when something has been stored', async function(){
+            await state.store({id, attribute, value, type})
+            expect(state.hasStoredAnything()).to.equal(true)
+        })
+    })
 
     describe('load', function(){
         it('must return the store value setted when the id and the attribute match', async function(){

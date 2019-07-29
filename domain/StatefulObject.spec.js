@@ -258,6 +258,10 @@ describe('StatefulObject', function(){
             })
         }
 
+        async function then_must_not_store_anything(){
+            expect(state.hasStoredAnything()).to.equal(false)
+        }
+
         beforeEach(function(){
             oldValue = 'oldValue'
             oldValue2 = 'oldValue2'
@@ -631,6 +635,67 @@ describe('StatefulObject', function(){
 
             it('must throw adding undefined is not supported', async function(){
                 await then_must_throw_adding_undefined_values_is_not_supported()
+            })
+        })
+
+        describe('when the value is an empty array', function(){
+            beforeEach(async function(){
+                newValue = []
+            })
+
+            describe('when the attribute was not defined', function(){
+                beforeEach(async function(){
+                    given_the_attribute_was_not_defined()
+                })
+
+                it('must not store anything', async function(){
+                    await when_we_add_the_new_value_to_the_attribute()
+                    await then_must_not_store_anything()
+                })
+            })
+
+            describe('when the attribute was defined as a primitive', function(){
+                beforeEach(async function(){
+                    given_the_attribute_was_defined_as_a_string()
+                })
+
+                it('must not store anything', async function(){
+                    await when_we_add_the_new_value_to_the_attribute()
+                    await then_must_not_store_anything()
+                })
+            })
+
+            describe('when the attribute was defined as an object reference', function(){
+                beforeEach(async function(){
+                    given_the_attribute_was_defined_as_an_object()
+                })
+
+                it('must not store anything', async function(){
+                    await when_we_add_the_new_value_to_the_attribute()
+                    await then_must_not_store_anything()
+                })
+            })
+
+            describe('when the attribute was defined as a list of primitives', function(){
+                beforeEach(async function(){
+                    given_the_attribute_was_defined_as_a_list_of_strings()
+                })
+
+                it('must not store anything', async function(){
+                    await when_we_add_the_new_value_to_the_attribute()
+                    await then_must_not_store_anything()
+                })
+            })
+
+            describe('when the attribute was defined as a list of references', function(){
+                beforeEach(async function(){
+                    given_the_attribute_was_defined_as_a_list_of_objects()
+                })
+
+                it('must not store anything', async function(){
+                    await when_we_add_the_new_value_to_the_attribute()
+                    await then_must_not_store_anything()
+                })
             })
         })
 

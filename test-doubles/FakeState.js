@@ -2,6 +2,7 @@ module.exports = function() {
     let storedId, storedAttribute, storedValue, storedType
     let fakeStoredId, fakeStoredAttribute, fakeStoredInfo
     let registeredElement, valueToReturnWhenAskingForIsRegistered, idRegistered
+    let somethingStored = false
 
     return Object.freeze({
         store,
@@ -14,7 +15,8 @@ module.exports = function() {
         setRegistered,
         hasRegistered,
 
-        assertHasStored
+        assertHasStored,
+        hasStoredAnything
     })
 
     async function register(element){
@@ -30,6 +32,7 @@ module.exports = function() {
         storedAttribute = attribute
         storedValue = value
         storedType = type
+        somethingStored = true
     }
 
     async function assertHasStored({id, attribute, value, type}){
@@ -44,6 +47,10 @@ module.exports = function() {
             storedAttribute === attribute &&
             equals(storedValue,value) &&
             storedType === type)
+    }
+
+    function hasStoredAnything(){
+        return somethingStored
     }
 
     function equals(value, value2){
