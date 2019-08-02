@@ -1,5 +1,5 @@
 const {expect} = require('chai')
-const {expectToThrow} = require('../test-tools/Expects')()
+const expectToThrow  = require('expect-to-throw')
 const StatefulObject = require('./StatefulObject')
 const FakeState = require('../test-doubles/FakeState')
 const FakeObjectRepository = require('../test-doubles/FakeObjectRepository')

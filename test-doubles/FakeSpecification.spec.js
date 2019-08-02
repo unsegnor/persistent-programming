@@ -1,5 +1,5 @@
 const {expect} = require('chai')
-const {expectToThrow} = require('../test-tools/Expects')()
+const expectToThrow  = require('expect-to-throw')
 const FakeSpecification = require('./FakeSpecification')
 
 describe('FakeSpecification', function(){

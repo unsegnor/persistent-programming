@@ -1,5 +1,5 @@
 const {expect} = require('chai')
-const {expectToThrow} = require('../test-tools/Expects')()
+const expectToThrow  = require('expect-to-throw')
 const ObjectRepository = require('./ObjectRepository')
 const FakeObjectFactory = require('../test-doubles/FakeObjectFactory')
 const FakeIdGenerator = require('../test-doubles/FakeIdGenerator')
