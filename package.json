@@ -1,6 +1,6 @@
 {
   "name": "persistent-programming",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "",
   "repository": "github:unsegnor/persistent-programming",
   "main": "index.js",
