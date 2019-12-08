@@ -5,18 +5,26 @@ module.exports = function() {
         store,
         load,
         register,
-        isRegistered
+        isRegistered,
+        getProperties
     })
 
-    async function store({id, attribute, value, type}){
-        stored[getValueIdFor(id, attribute)] = value
-        stored[getTypeIdFor(id, attribute)] = type
+    async function store({id, property, value, type}){
+        stored[getValueIdFor(id, property)] = value
+        stored[getTypeIdFor(id, property)] = type
+        addProperty(id, property)
     }
 
-    async function load({id, attribute}){
+    function addProperty(id, property){
+        var properties = stored[`${id}.PROPERTIES`] || []
+        properties.push(property)
+        stored[`${id}.PROPERTIES`] = properties
+    }
+
+    async function load({id, property}){
         return {
-            value: stored[getValueIdFor(id, attribute)],
-            type: stored[getTypeIdFor(id, attribute)]
+            value: stored[getValueIdFor(id, property)],
+            type: stored[getTypeIdFor(id, property)]
         }
     }
 
@@ -24,12 +32,12 @@ module.exports = function() {
         return `${id1.length}${id1}${id2.length}${id2}`
     }
 
-    function getValueIdFor(id, attribute){
-        return `${composeId(id, attribute)}.VALUE`
+    function getValueIdFor(id, property){
+        return `${composeId(id, property)}.VALUE`
     }
 
-    function getTypeIdFor(id, attribute){
-        return `${composeId(id, attribute)}.TYPE`
+    function getTypeIdFor(id, property){
+        return `${composeId(id, property)}.TYPE`
     }
 
     async function register(id){
@@ -38,5 +46,9 @@ module.exports = function() {
 
     async function isRegistered(id){
         return stored[`${id}.REGISTERED`] === 'true'
+    }
+    
+    async function getProperties({id}){
+        return stored[`${id}.PROPERTIES`] || []
     }
 }

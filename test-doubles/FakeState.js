@@ -1,19 +1,22 @@
 module.exports = function() {
-    let storedId, storedAttribute, storedValue, storedType
-    let fakeStoredId, fakeStoredAttribute, fakeStoredInfo
+    let storedId, storedProperty, storedValue, storedType
+    let fakeStoredId, fakeStoredProperty, fakeStoredInfo
     let registeredElement, valueToReturnWhenAskingForIsRegistered, idRegistered
     let somethingStored = false
+    let propertiesToReturn, idWithProperties
 
     return Object.freeze({
         store,
         load,
         register,
         isRegistered,
+        getProperties,
 
         hasStored,
         setStored,
         setRegistered,
         hasRegistered,
+        setPropertiesForId,
 
         assertHasStored,
         hasStoredAnything
@@ -27,24 +30,24 @@ module.exports = function() {
         if(id === idRegistered) return valueToReturnWhenAskingForIsRegistered
     }
     
-    async function store({id, attribute, value, type}){
+    async function store({id, property, value, type}){
         storedId = id
-        storedAttribute = attribute
+        storedProperty = property
         storedValue = value
         storedType = type
         somethingStored = true
     }
 
-    async function assertHasStored({id, attribute, value, type}){
+    async function assertHasStored({id, property, value, type}){
         if(storedId !== id) throw new Error('stored id: ' + storedId + ' is different than expected: ' + id)
-        if(storedAttribute !== attribute) throw new Error('stored attribute: ' + storedAttribute + ' is different than expected: ' + attribute)
+        if(storedProperty !== property) throw new Error('stored property: ' + storedProperty + ' is different than expected: ' + property)
         if(storedType !== type) throw new Error('stored type: ' + storedType + ' is different than expected: ' + type)
         if(!equals(storedValue, value)) throw new Error('stored value: ' + storedValue + ' is different than expected: ' + value )
     }
 
-    async function hasStored({id, attribute, value, type}){
+    async function hasStored({id, property, value, type}){
         return (storedId === id &&
-            storedAttribute === attribute &&
+            storedProperty === property &&
             equals(storedValue,value) &&
             storedType === type)
     }
@@ -67,15 +70,15 @@ module.exports = function() {
         }
     }
 
-    function setStored({id, attribute, value, type}){
+    function setStored({id, property, value, type}){
         fakeStoredId = id
-        fakeStoredAttribute = attribute
+        fakeStoredProperty = property
         fakeStoredInfo = { value, type }
     }
 
-    async function load({id, attribute}){
+    async function load({id, property}){
         if(id !== fakeStoredId) throw new Error(`id not matching ${id}`)
-        if(attribute !== fakeStoredAttribute) throw new Error(`attribute not matching ${attribute}`)
+        if(property !== fakeStoredProperty) throw new Error(`property not matching ${property}`)
         return fakeStoredInfo
     }
 
@@ -86,5 +89,15 @@ module.exports = function() {
 
     function hasRegistered(element){
         return registeredElement === element
+    }
+
+    function setPropertiesForId({id, fakeProperties}){
+        propertiesToReturn = fakeProperties
+        idWithProperties = id
+    }
+
+    async function getProperties({id}){
+        if(id != idWithProperties) throw new Error(`id not matching: "${id}" expected "${idWithProperties}"`)
+        return propertiesToReturn
     }
 }

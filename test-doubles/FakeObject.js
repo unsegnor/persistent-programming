@@ -3,7 +3,7 @@ module.exports = function() {
     equalObject = {},
     notEqualObject = {},
     fakeValue,
-    expectedAttribute
+    expectedProperty
 
     return Object.freeze({
         getId,
@@ -28,8 +28,8 @@ module.exports = function() {
         notEqualObject = object
     }
 
-    function setFake(attribute, value){
-        expectedAttribute = attribute
+    function setFake(property, value){
+        expectedProperty = property
         fakeValue = value
     }
 
@@ -43,8 +43,8 @@ module.exports = function() {
         throw new Error('object not expected')
     }
 
-    async function get(attribute){
-        if(attribute === expectedAttribute) return fakeValue
-        throw new Error('attribute not expected')
+    async function get(property){
+        if(property === expectedProperty) return fakeValue
+        throw new Error('property not expected')
     }
 }

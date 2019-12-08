@@ -9,32 +9,33 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
         set,
         get,
         getId,
-        add
+        add,
+        getProperties
     })
 
     async function getId(){
         return id
     }
 
-    async function set(attribute, value){
+    async function set(property, value){
         if(isStringValue(value)){
             var typeToStore = isAList(value) ? primitive_list_type : primitive_type
-            await state.store({id, attribute, value, type: typeToStore})
+            await state.store({id, property, value, type: typeToStore})
         }else if(isObjectValue(value)){
             if(isAList(value)){
                 var ids = await getIdsFromObjectsList(value)
-                await state.store({id, attribute, value: ids, type: reference_list_type})
+                await state.store({id, property, value: ids, type: reference_list_type})
             }else{
                 if(!value.getId) throw new Error('missing id')
-                await state.store({id, attribute, value: await value.getId(), type: reference_type})
+                await state.store({id, property, value: await value.getId(), type: reference_type})
             }
         }else{
             throw new Error('type not supported: ' + (typeof value))
         }
     }
 
-    async function get(attribute){
-        let retrievedInfo = await state.load({id, attribute})
+    async function get(property){
+        let retrievedInfo = await state.load({id, property})
 
         if(retrievedInfo.type === primitive_type){
             return retrievedInfo.value
@@ -64,10 +65,10 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
         throw new Error('type not expected: ' + retrievedInfo.type)
     }
 
-    async function add(attribute, newValue){
-        var currentAttribute = await state.load({id, attribute})
-        var currentType = currentAttribute.type
-        var currentValue = currentAttribute.value
+    async function add(property, newValue){
+        var currentProperty = await state.load({id, property})
+        var currentType = currentProperty.type
+        var currentValue = currentProperty.value
 
         if(isAnEmptyList(newValue)) return
         if(hasUndefinedValues(newValue)) throw new Error('adding undefined values is not supported')
@@ -87,7 +88,7 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
             throw new Error('type not supported: ' + (typeof newValue))
         }
 
-        await state.store({id, attribute, value: valueToStore, type: typeToStore})
+        await state.store({id, property, value: valueToStore, type: typeToStore})
     }
 
     function joinValuesInAList(currentValue, newValue){
@@ -167,5 +168,9 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
             value.every(function(item){
                 return typeof(item) === type
             })
+    }
+
+    async function getProperties(){
+        return state.getProperties({id})
     }
 }

@@ -123,5 +123,19 @@ describe('Integration tests', function(){
             expect(await rooms[1].get('name')).to.equal('bedroom')
             expect(await rooms[2].get('name')).to.equal('kitchen')
         })
+
+        it('must allow listing all the properties of an object', async function(){
+            var house = await objectRepository.getNew()
+            await house.set('address', 'whatever street')
+            await house.set('color', 'red')
+            var bedroom = await objectRepository.getNew()
+            await house.add('rooms', bedroom)
+
+            var properties = await house.getProperties()
+
+            expect(properties).to.contain('address')
+            expect(properties).to.contain('color')
+            expect(properties).to.contain('rooms')
+        })
     })
 })
