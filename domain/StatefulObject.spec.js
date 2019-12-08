@@ -28,8 +28,6 @@ describe('StatefulObject', function(){
         describe('when the value is an empty array', function(){
             it('must store the array of values as a list of primitives', async function(){
                 var property = 'propertyName'
-                var value1 = 'value1'
-                var value2 = 'value2'
                 var array = []
 
                 await object.set(property, array)
@@ -715,6 +713,20 @@ describe('StatefulObject', function(){
     describe('getId', function(){
         it('must return the id of the object', async function(){
             expect(await object.getId()).to.equal(id)
+        })
+    })
+
+    describe('getProperties', function(){
+        it('must return the list of attributes related to the id in the state', async function(){
+            var attribute1 = 'attribute1'
+            var attribute2 = 'attribute2'
+            var attributesList = [attribute1, attribute2]
+            state.setAttributesForId({id, fakeAttributes: attributesList})
+
+            var properties = await object.getProperties()
+
+            expect(properties).to.contain(attribute1)
+            expect(properties).to.contain(attribute2)
         })
     })
 })

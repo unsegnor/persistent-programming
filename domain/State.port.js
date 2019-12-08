@@ -3,21 +3,17 @@ const {expect} = require('chai')
 module.exports = function(){
     describe('as a state', function(){
         let state
+        let id, attribute, value, type
 
         beforeEach(function(){
             state = this.adapter
+            id = 'id'
+            attribute = 'attribute'
+            value = 'value'
+            type = 'type'
         })
 
         describe('load', function(){
-            let id, attribute, value, type
-
-            beforeEach(function(){
-                id = 'id'
-                attribute = 'attribute'
-                value = 'value'
-                type = 'type'
-            })
-
             it('must return the value and type of the matching id and attribute', async function(){
                 await state.store({id, attribute, value, type})
                 var storedData = await state.load({id, attribute})
@@ -99,6 +95,27 @@ module.exports = function(){
 
             it('must return false when the element has not been registered', async function(){
                 expect(await state.isRegistered('elementId')).to.equal(false)
+            })
+        })
+
+        describe('getAttributes', function(){
+            it('must return the attributes setted to the id', async function(){
+                var attribute1 = 'attribute1'
+                var attribute2 = 'attribute2'
+                await state.store({id, attribute: attribute1, value, type})
+                await state.store({id, attribute: attribute2, value, type})
+                
+                var attributes = await state.getAttributes({id})
+
+                expect(attributes).to.contain(attribute1)
+                expect(attributes).to.contain(attribute2)
+            })
+
+            it('must return an empty array when there are no attributes setted to the id', async function(){
+                var attributes = await state.getAttributes({id})
+
+                expect(attributes).to.be.an('array')
+                expect(attributes).to.be.empty
             })
         })
     })

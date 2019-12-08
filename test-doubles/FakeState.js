@@ -3,17 +3,20 @@ module.exports = function() {
     let fakeStoredId, fakeStoredAttribute, fakeStoredInfo
     let registeredElement, valueToReturnWhenAskingForIsRegistered, idRegistered
     let somethingStored = false
+    let attributesToReturn, idWithAttributes
 
     return Object.freeze({
         store,
         load,
         register,
         isRegistered,
+        getAttributes,
 
         hasStored,
         setStored,
         setRegistered,
         hasRegistered,
+        setAttributesForId,
 
         assertHasStored,
         hasStoredAnything
@@ -86,5 +89,15 @@ module.exports = function() {
 
     function hasRegistered(element){
         return registeredElement === element
+    }
+
+    function setAttributesForId({id, fakeAttributes}){
+        attributesToReturn = fakeAttributes
+        idWithAttributes = id
+    }
+
+    async function getAttributes({id}){
+        if(id != idWithAttributes) throw new Error(`id not matching: "${id}" expected "${idWithAttributes}"`)
+        return attributesToReturn
     }
 }

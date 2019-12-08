@@ -9,7 +9,8 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
         set,
         get,
         getId,
-        add
+        add,
+        getProperties
     })
 
     async function getId(){
@@ -167,5 +168,9 @@ module.exports = function StatefulObject({id, state, objectRepository}) {
             value.every(function(item){
                 return typeof(item) === type
             })
+    }
+
+    async function getProperties(){
+        return state.getAttributes({id})
     }
 }

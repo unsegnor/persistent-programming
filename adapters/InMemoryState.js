@@ -5,12 +5,20 @@ module.exports = function() {
         store,
         load,
         register,
-        isRegistered
+        isRegistered,
+        getAttributes
     })
 
     async function store({id, attribute, value, type}){
         stored[getValueIdFor(id, attribute)] = value
         stored[getTypeIdFor(id, attribute)] = type
+        addAttribute(id, attribute)
+    }
+
+    function addAttribute(id, attribute){
+        var attributes = stored[`${id}.ATTRIBUTES`] || []
+        attributes.push(attribute)
+        stored[`${id}.ATTRIBUTES`] = attributes
     }
 
     async function load({id, attribute}){
@@ -38,5 +46,9 @@ module.exports = function() {
 
     async function isRegistered(id){
         return stored[`${id}.REGISTERED`] === 'true'
+    }
+    
+    async function getAttributes({id}){
+        return stored[`${id}.ATTRIBUTES`] || []
     }
 }

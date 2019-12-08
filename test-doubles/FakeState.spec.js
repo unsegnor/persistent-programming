@@ -161,4 +161,25 @@ describe('FakeState', function(){
             expect(await state.hasRegistered('id')).to.equal(false)
         })
     })
+
+    describe('getAttributes', function(){
+        describe('when there is an id with attributes', function(){
+            let fakeAttributes
+
+            beforeEach(function(){
+                fakeAttributes = ['attribute1', 'attribute2']
+                state.setAttributesForId({id, fakeAttributes})
+            })
+
+            it('must return the attributes list setted for the specific id', async function(){
+                expect(await state.getAttributes({id})).to.equal(fakeAttributes)
+            })
+    
+            it('must throw when the id does not match', async function(){
+                await expectToThrow('id not matching', async function(){
+                    await state.getAttributes({id: 'otherId'})
+                })
+            })
+        })
+    })
 })
