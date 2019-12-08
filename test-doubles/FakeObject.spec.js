@@ -47,18 +47,18 @@ describe('FakeObject', function(){
     })
 
     describe('get', function(){
-        it('must return the fake value setted when requesting the same attribute', async function(){
+        it('must return the fake value setted when requesting the same property', async function(){
             var object = FakeObject()
-            object.setFake('attribute', 'value')
+            object.setFake('property', 'value')
             
-            expect(await object.get('attribute')).to.equal('value')
+            expect(await object.get('property')).to.equal('value')
         })
 
-        it('must throw when getting a not expected attribute', async function(){
+        it('must throw when getting a not expected property', async function(){
             var object = FakeObject()
-            object.setFake('attribute', 'value')
-            await expectToThrow('attribute not expected', async function(){
-                await object.get('otherAttribute')
+            object.setFake('property', 'value')
+            await expectToThrow('property not expected', async function(){
+                await object.get('otherProperty')
             })
         })
     })
