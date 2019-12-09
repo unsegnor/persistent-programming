@@ -189,6 +189,16 @@ describe('StatefulObject', function(){
             })
         })
 
+        it('must return an empty array when the property is an empty reference list', async function(){
+            var property = 'property'
+            state.setStored({id, property, value: [], type: 'reference-list'})
+            
+            var result = await object.get(property)
+            
+            expect(result).to.be.an('array')
+            expect(result).to.be.empty
+        })
+
         it('must return undefined when the property has no value nor type', async function(){
             var property = 'property'
             state.setStored({id, property, value: undefined, type: undefined})
