@@ -6,7 +6,7 @@ module.exports = function(config) {
     testRunner: "mocha",
     transpilers: [],
     testFramework: "mocha",
-    coverageAnalysis: "perTest",
+    coverageAnalysis: "perTestInIsolation",
     mochaOptions:{
       spec: ['domain/*.spec.js']
     },
