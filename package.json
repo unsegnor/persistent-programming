@@ -12,7 +12,10 @@
     "test-doubles": "mocha test-doubles --recursive",
     "test-adapters": "mocha adapters --recursive",
     "test-integration": "mocha test-integration --recursive",
-    "test-mutation": "npx stryker run"
+    "test-mutation": "npx stryker run",
+    "configure-deployment": "travis setup npm",
+    "patch": "npm version patch && git push --tags",
+    "push-with-tags": "git push --follow-tags"
   },
   "author": "Víctor Calatayud Asensio",
   "license": "GPL-3.0-or-later",
