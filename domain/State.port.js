@@ -32,7 +32,7 @@ module.exports = function(){
             })
 
             it('must return the value and type of the matching id and property when the value is an array', async function(){
-                var value = ['value1', 'value2']
+                value = ['value1', 'value2']
                 await state.store({id, property, value, type})
                 var storedData = await state.load({id, property})
     
