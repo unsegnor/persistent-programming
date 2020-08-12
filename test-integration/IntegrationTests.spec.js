@@ -137,5 +137,23 @@ describe('Integration tests', function(){
             expect(properties).to.contain('color')
             expect(properties).to.contain('rooms')
         })
+
+        it('must allow to find an object within an array property', async function(){
+            var house = await objectRepository.getNew()
+            var bedroom = await objectRepository.getNew()
+            await bedroom.set('name', 'bedroom')
+            var bathroom = await objectRepository.getNew()
+            await bathroom.set('name', 'bathroom')
+
+            await house.add('rooms', bedroom)
+            await house.add('rooms', bathroom)
+
+            var requestedRoom = house.find('rooms', async function(room){
+                var roomName = await room.get('name')
+                return roomName == 'bathroom'
+            })
+
+            expect(await requestedRoom.get('name')).to.equal('bathroom')
+        })
     })
 })
