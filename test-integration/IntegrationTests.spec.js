@@ -1,11 +1,11 @@
 const {expect} = require('chai')
-const ObjectRepository = require('../adapters/InMemoryObjectRepository')
+const {TestRepository} = require('../index')
 
 describe('Integration tests', function(){
     let objectRepository
 
     beforeEach(function(){
-        objectRepository = ObjectRepository()
+        objectRepository = TestRepository()
     })
 
     describe('Object repository', function(){
