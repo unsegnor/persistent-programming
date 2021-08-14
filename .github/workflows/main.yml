@@ -1,46 +1,44 @@
-name: "Bump Version"
+name: "Test and publish"
 
 on:
   push:
-    branches:
-      - "master"
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  bump-version:
-    name: "Bump Version on master"
+  build:
+    name: "Test and publish"
     runs-on: ubuntu-latest
 
     steps:
-      #Increase version
+      #Prepare node environment
       - name: "Checkout source code"
         uses: "actions/checkout@v2"
         with:
           ref: ${{ github.ref }}
-      - name: "cat package.json"
-        run: cat ./package.json
       - name: "Setup Node.js"
         uses: "actions/setup-node@v1"
         with:
           node-version: 12
+          registry-url: 'https://registry.npmjs.org'
+      
+      #Run tests
+      - run: npm ci
+      - run: npm test
+
+      #Increase version in main branch
       - name: "Automated Version Bump"
+        if: github.ref == 'refs/heads/master'
         id: version-bump
         uses: "phips28/gh-action-bump-version@master"
         with:
           tag-prefix: ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: "cat package.json"
-        run: cat ./package.json
-      - name:  'Output Step'
-        env:
-          NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
-        run: echo "new tag $NEW_TAG"
-      #Publish to npm
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '12.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: npm install
+
+      #Publish to npm in main branch
       - run: npm publish
+        if: github.ref == 'refs/heads/master'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
