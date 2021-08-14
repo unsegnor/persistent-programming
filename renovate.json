@@ -1,11 +1,3 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "patch": {
-    "automerge": true
-  },
-  "pin": {
-    "automerge": true
-  }
+  "automerge": true
 }
