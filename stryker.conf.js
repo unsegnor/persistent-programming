@@ -9,6 +9,5 @@ module.exports = {
   mutate: ['domain/*.js',
     '!domain/*.spec.js',
     '!domain/*.port.js',
-    '!domain/*.factory.js'],
-  maxConcurrentTestRunners: 2
+    '!domain/*.factory.js']
 }
