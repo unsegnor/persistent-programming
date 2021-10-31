@@ -4,7 +4,8 @@ module.exports = {
   testRunner: "mocha",
   coverageAnalysis: "perTest",
   mochaOptions:{
-    spec: ['domain/*.spec.js']
+    spec: ['domain/*.spec.js',
+      'test-integration/*.spec.js']
   },
   mutate: ['domain/*.js',
     '!domain/*.spec.js',

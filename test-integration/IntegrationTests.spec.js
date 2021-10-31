@@ -9,6 +9,91 @@ describe('Integration tests', function(){
     })
 
     describe('Object repository', function(){
+        describe('getRoot', function(){
+            it('must create and return a new root object if the id did not exist', async function(){
+                var root = await objectRepository.getRoot('specific-id')
+                var house = await objectRepository.getNew()
+                await house.set('color', 'blue')
+                await root.add('houses', house)
+            })
+
+            it('must return the existing root object if the id did exist', async function(){
+                var root = await objectRepository.getRoot('other-specific-id')
+                var house = await objectRepository.getNew()
+                await house.set('color', 'blue')
+                await root.add('houses', house)
+
+                var root2 = await objectRepository.getRoot('other-specific-id')
+                var houses = await root2.get('houses')
+                var house2 = houses[0]
+                var color = await house2.get('color')
+
+                expect(color).to.equal('blue')
+            })
+
+            it('must return different root objects if the ids are different', async function(){
+                var root = await objectRepository.getRoot('specific-id')
+                var house = await objectRepository.getNew()
+                await house.set('color', 'blue')
+                await root.add('houses', house)
+
+                var root2 = await objectRepository.getRoot('other-specific-id')
+                var houses = await root2.get('houses')
+
+                expect(houses).to.be.undefined
+            })
+
+            it('the internal id must not match with the root id', async function(){
+                var object = await objectRepository.getNew()
+                await object.set('created', 'yes')
+                var objectId = await object.getId()
+
+                var root = await objectRepository.getRoot(objectId)
+
+                var value = await root.get('created')
+                expect(value).to.be.undefined
+            })
+
+            it('we must be able to set a different idGenerator', async function(){
+                var idGenerator = {
+                    getNew: function(){
+                        return '5'
+                    }
+                }
+                var objectRepository = TestRepository({idGenerator})
+                var object = await objectRepository.getNew()
+                expect(await object.getId()).to.equal('internal-5')
+            })
+
+            it('the root id must not collide wih other objects ids', async function(){
+                var idGenerator = {
+                    getNew: function(){
+                        return '5'
+                    }
+                }
+                var objectRepository = TestRepository({idGenerator})
+                var object = await objectRepository.getNew()
+                await object.set('value', 'existing')
+
+                var root = await objectRepository.getRoot(await object.getId())
+                expect(await root.get('value')).to.be.undefined
+            })
+
+            it('the root id must not collide wih other objects ids even if the id generator generates the same root id', async function(){
+                var idGenerator = {
+                    getNew: function(){
+                        return 'root-5'
+                    }
+                }
+                var objectRepository = TestRepository({idGenerator})
+                var object = await objectRepository.getNew()
+                await object.set('value', 'existing')
+
+                var root = await objectRepository.getRoot('5')
+                expect(await root.get('value')).to.be.undefined
+            })
+        })
+
         it('must allow to assign and read values', async function(){
             var object = await objectRepository.getNew()
             await object.set('type', 'house')

@@ -1,13 +1,20 @@
 module.exports = function({factory, idGenerator, state}) {
     return Object.freeze({
         getNew,
-        get
+        get,
+        getRoot
     })
+
+    async function getRoot(id){
+        var internalId = `root-${id}`
+        return await factory.create({id: internalId, state, objectRepository: this})
+    }
 
     async function getNew(){
         let id = await idGenerator.getNew()
-        await state.register(id)
-        return await factory.create({id, state, objectRepository: this})
+        var internalId = `internal-${id}`
+        await state.register(internalId)
+        return await factory.create({id: internalId, state, objectRepository: this})
     }
 
     async function get(id){
