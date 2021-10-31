@@ -21,12 +21,12 @@ describe('ObjectRepository', function(){
             expect(factory.hasCreatedAnObject()).to.equal(true)
         })
 
-        it('must set the id as the one provided by the id generator', async function(){
+        it('must set the id as the one provided by the id generator plus the prefix', async function(){
             var newId = 'newId'
             idGenerator.setFakeId(newId)
             await repository.getNew()
             
-            expect(factory.hasCreatedAnObjectWith({id: newId})).to.equal(true)
+            expect(factory.hasCreatedAnObjectWith({id: `internal-${newId}`})).to.equal(true)
         })
 
         it('must set the state as the given state', async function(){
@@ -52,7 +52,7 @@ describe('ObjectRepository', function(){
             idGenerator.setFakeId(id)
             await repository.getNew()
 
-            expect(state.hasRegistered(id)).to.equal(true)
+            expect(state.hasRegistered(`internal-${id}`)).to.equal(true)
         })
     })
 

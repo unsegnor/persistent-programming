@@ -9,42 +9,89 @@ describe('Integration tests', function(){
     })
 
     describe('Object repository', function(){
-        it('must allow creating an object with specific id', async function(){
-            var object = await objectRepository.getNew('specific-id')
-            //qué pinta tiene el id que tenemos que utilizar?
-            //porque los ids ahora mismo los están generando el propio repository
-            //tenemos que poder generar objetos con un id específico
-            //podemos marcar esos objetos de modo que nunca coincidan
-            //por ejemplo con un prefijo: custom-<id>
-            //después cuando haga get por id tendría que poder ponerlo sin conocer ese sufijo
-            //quizá necesitemos un nuevo tipo de nodo, un nodo raíz
-            //el objetivo es que al reiniciar, la aplicación pueda volver a referenciar al nodo raíz
-            //application-id: aildfhoq84n48rfhru78n2ourfhr72o3urfheu2o8rfh2o8...(2048 caracteres)
-            //ese id es el que nos permite volver a cargar la aplicación
-            //cómo hacemos para compaginar los dos tipos de ids??
-            //quizá es que no necesitamos el id interno para nada
-            //eso sólo lo utiliza el propio state para enlazar sus elementos
+        describe('getRoot', function(){
+            it('must create and return a new root object if the id did not exist', async function(){
+                var root = await objectRepository.getRoot('specific-id')
+                var house = await objectRepository.getNew()
+                await house.set('color', 'blue')
+                await root.add('houses', house)
+            })
 
-            //entonces si generamos un nuevo objeto con id definido
-            
+            it('must return the existing root object if the id did exist', async function(){
+                var root = await objectRepository.getRoot('other-specific-id')
+                var house = await objectRepository.getNew()
+                await house.set('color', 'blue')
+                await root.add('houses', house)
 
-            //necesitamos poder generar objetos a partir de un identificador
-            //de modo que no colisione con el resto de objetos
-            //podemos usar un prefijo y luego si pedimos un objeto propio con el identificador otra vez
-            //entonces volvermos a añadir el prefijo
-            //y si pedimos un objeto por id normal
-            //entonces no añadimos el prefijo, es decir, que necesitamos otro método para obtener objeto
-            //o que el método que tenemos para obtener objetos por id se el custom
-            //y hacemos un test para comprobar que nunca van a colisionar con los objetos creados internamente
-            
+                var root2 = await objectRepository.getRoot('other-specific-id')
+                var houses = await root2.get('houses')
+                var house2 = houses[0]
+                var color = await house2.get('color')
 
+                expect(color).to.equal('blue')
+            })
 
-            //se podrá tener un id único en el mundo por cada objeto??
-            //de forma que se pudieran compartir objetos específicos
-    
-            expect(await object.get('type')).to.equal('house')
-            expect(await object.get('name')).to.equal('my house')
-            expect(await object.get('color')).to.equal('red')
+            it('must return different root objects if the ids are different', async function(){
+                var root = await objectRepository.getRoot('specific-id')
+                var house = await objectRepository.getNew()
+                await house.set('color', 'blue')
+                await root.add('houses', house)
+
+                var root2 = await objectRepository.getRoot('other-specific-id')
+                var houses = await root2.get('houses')
+
+                expect(houses).to.be.undefined
+            })
+
+            it('the internal id must not match with the root id', async function(){
+                var object = await objectRepository.getNew()
+                await object.set('created', 'yes')
+                var objectId = await object.getId()
+
+                var root = await objectRepository.getRoot(objectId)
+
+                var value = await root.get('created')
+                expect(value).to.be.undefined
+            })
+
+            it('we must be able to set a different idGenerator', async function(){
+                var idGenerator = {
+                    getNew: function(){
+                        return '5'
+                    }
+                }
+                var objectRepository = TestRepository({idGenerator})
+                var object = await objectRepository.getNew()
+                expect(await object.getId()).to.equal('internal-5')
+            })
+
+            it('the root id must not collide wih other objects ids', async function(){
+                var idGenerator = {
+                    getNew: function(){
+                        return '5'
+                    }
+                }
+                var objectRepository = TestRepository({idGenerator})
+                var object = await objectRepository.getNew()
+                await object.set('value', 'existing')
+
+                var root = await objectRepository.getRoot(await object.getId())
+                expect(await root.get('value')).to.be.undefined
+            })
+
+            it('the root id must not collide wih other objects ids even if the id generator generates the same root id', async function(){
+                var idGenerator = {
+                    getNew: function(){
+                        return 'root-5'
+                    }
+                }
+                var objectRepository = TestRepository({idGenerator})
+                var object = await objectRepository.getNew()
+                await object.set('value', 'existing')
+
+                var root = await objectRepository.getRoot('5')
+                expect(await root.get('value')).to.be.undefined
+            })
         })
 
         it('must allow to assign and read values', async function(){
