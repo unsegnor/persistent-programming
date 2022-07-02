@@ -7,10 +7,10 @@
   "scripts": {
     "test": "npm run test-mocha",
     "test-mocha": "npm run test-doubles && npm run test-domain && npm run test-adapters && npm run test-integration && npm run test-mutation",
-    "test-domain": "mocha domain --recursive",
-    "test-doubles": "mocha test-doubles --recursive",
-    "test-adapters": "mocha adapters --recursive",
-    "test-integration": "mocha test-integration --recursive",
+    "test-domain": "nyc mocha domain --recursive",
+    "test-doubles": "nyc mocha test-doubles --recursive",
+    "test-adapters": "nyc mocha adapters --recursive",
+    "test-integration": "nyc mocha test-integration --recursive",
     "test-mutation": "npx stryker run",
     "patch": "npm version patch && git push --follow-tags"
   },
@@ -24,5 +24,8 @@
     "mocha": "9.2.0",
     "expect-to-throw": "^3.0.0",
     "sinon": "^13.0.0"
+  },
+  "dependencies": {
+    "nyc": "^15.1.0"
   }
 }
