@@ -41,7 +41,7 @@ module.exports = function(){
                     await house.set('color', 'blue')
                     await root.add('houses', house)
     
-                    var root2 = await objectRepository.getRoot('other-specific-id')
+                    var root2 = await objectRepository.getRoot('different-specific-id')
                     var houses = await root2.get('houses')
     
                     expect(houses).to.be.undefined
