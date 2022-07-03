@@ -7,6 +7,10 @@ module.exports = function(){
         beforeEach(function(){
             objectRepository = this.CreateRepository()
         })
+
+        afterEach(async function(){
+            await objectRepository.close()
+        })
     
         describe('Object repository', function(){
             describe('getRoot', function(){

@@ -6,7 +6,8 @@ module.exports = function() {
         load,
         register,
         isRegistered,
-        getProperties
+        getProperties,
+        close
     })
 
     async function store({id, property, value, type}){
@@ -51,4 +52,6 @@ module.exports = function() {
     async function getProperties({id}){
         return stored[`${id}.PROPERTIES`] || []
     }
+
+    async function close(){}
 }
