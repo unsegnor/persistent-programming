@@ -64,9 +64,11 @@ module.exports = function(){
                             return '5'
                         }
                     }
-                    var objectRepository = this.CreateRepository({idGenerator})
-                    var object = await objectRepository.getNew()
+                    var otherObjectRepository = this.CreateRepository({idGenerator})
+                    var object = await otherObjectRepository.getNew()
                     expect(await object.getId()).to.equal('internal-5')
+                    
+                    await otherObjectRepository.close()
                 })
     
                 it('the root id must not collide wih other objects ids', async function(){
@@ -75,12 +77,14 @@ module.exports = function(){
                             return '5'
                         }
                     }
-                    var objectRepository = this.CreateRepository({idGenerator})
-                    var object = await objectRepository.getNew()
+                    var otherObjectRepository = this.CreateRepository({idGenerator})
+                    var object = await otherObjectRepository.getNew()
                     await object.set('value', 'existing')
     
-                    var root = await objectRepository.getRoot(await object.getId())
+                    var root = await otherObjectRepository.getRoot(await object.getId())
                     expect(await root.get('value')).to.be.undefined
+
+                    await otherObjectRepository.close()
                 })
     
                 it('the root id must not collide wih other objects ids even if the id generator generates the same root id', async function(){
@@ -89,12 +93,14 @@ module.exports = function(){
                             return 'root-5'
                         }
                     }
-                    var objectRepository = this.CreateRepository({idGenerator})
-                    var object = await objectRepository.getNew()
+                    var otherObjectRepository = this.CreateRepository({idGenerator})
+                    var object = await otherObjectRepository.getNew()
                     await object.set('value', 'existing')
     
-                    var root = await objectRepository.getRoot('5')
+                    var root = await otherObjectRepository.getRoot('5')
                     expect(await root.get('value')).to.be.undefined
+
+                    await otherObjectRepository.close()
                 })
             })
     
