@@ -118,5 +118,9 @@ module.exports = function(){
                 expect(properties).to.be.empty
             })
         })
+
+        it('must be closable', async function(){
+            await state.close()
+        })
     })
 }

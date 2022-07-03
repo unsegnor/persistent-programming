@@ -4,15 +4,18 @@ const ObjectFactory = require('../domain/StatefulObject.factory')
 const IdGenerator = require('./InMemoryIdGenerator')
 
 module.exports = function(dependencies) {
+    let state = State()
+    let idGenerator = (dependencies && dependencies.idGenerator) || IdGenerator()
     let repository = ObjectRepository({
         factory: ObjectFactory(),
-        idGenerator: (dependencies && dependencies.idGenerator) || IdGenerator(),
-        state: State()})
+        idGenerator,
+        state})
 
     return Object.freeze({
         getNew,
         get,
-        getRoot
+        getRoot,
+        close
     })
 
     async function getNew(){
@@ -25,5 +28,9 @@ module.exports = function(dependencies) {
 
     async function getRoot(id){
         return repository.getRoot(id)
+    }
+
+    async function close(){
+        await state.close()
     }
 }
