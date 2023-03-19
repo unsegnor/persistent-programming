@@ -17,10 +17,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+
+      - name: Read Node.js version from .nvmrc
+        id: read_nvmrc
+        run: |
+          echo "::set-output name=node_version::$(cat .nvmrc)"
+        
       - name: "Setup Node.js"
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: ${{ steps.read_nvmrc.outputs.node_version }}
           registry-url: 'https://registry.npmjs.org'
       
       #Run tests
