@@ -24,5 +24,8 @@
     "mocha": "10.2.0",
     "expect-to-throw": "^3.0.0",
     "sinon": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }
