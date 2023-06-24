@@ -18,7 +18,7 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@stryker-mutator/core": "7.1.0",
-    "@stryker-mutator/mocha-runner": "7.0.2",
+    "@stryker-mutator/mocha-runner": "7.1.0",
     "chai": "4.3.7",
     "cucumber": "6.0.7",
     "mocha": "10.2.0",
