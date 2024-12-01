@@ -17,8 +17,8 @@
   "author": "Víctor Calatayud Asensio",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@stryker-mutator/core": "7.1.1",
-    "@stryker-mutator/mocha-runner": "7.1.1",
+    "@stryker-mutator/core": "7.3.0",
+    "@stryker-mutator/mocha-runner": "7.3.0",
     "chai": "4.5.0",
     "cucumber": "6.0.7",
     "mocha": "10.5.0",
