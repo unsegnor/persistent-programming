@@ -1,4 +1,5 @@
 {
+  "extends": ["group:monorepos"],
   "automerge": true,
   "nvm": true
 }
