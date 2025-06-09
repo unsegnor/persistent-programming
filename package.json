@@ -21,7 +21,7 @@
     "@stryker-mutator/mocha-runner": "9.0.1",
     "chai": "5.2.0",
     "cucumber": "6.0.7",
-    "mocha": "11.5.0",
+    "mocha": "11.6.0",
     "expect-to-throw": "^3.0.0",
     "sinon": "^20.0.0"
   }
