@@ -24,7 +24,7 @@ jobs:
           echo "::set-output name=node_version::$(cat .nvmrc)"
         
       - name: "Setup Node.js"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ steps.read_nvmrc.outputs.node_version }}
           registry-url: 'https://registry.npmjs.org'
