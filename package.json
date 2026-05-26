@@ -23,6 +23,6 @@
     "cucumber": "6.0.7",
     "mocha": "11.7.5",
     "expect-to-throw": "^3.0.0",
-    "sinon": "^21.0.0"
+    "sinon": "^22.0.0"
   }
 }
